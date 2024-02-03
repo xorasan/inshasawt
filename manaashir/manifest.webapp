@@ -1,0 +1,30 @@
+{
+	"version": "5.0.4",
+	"name": "inshasawt",
+	"subtitle": "",
+	"description": "",
+	"display": "standalone",
+	"fullscreen": "",
+	"cursor": "false",
+	"launch_path": "/index.html",
+	"developer": {
+		"name": "Hasan Xorasani",
+		"url": "mailto:hxorasani@gmail.com"
+	},
+	"locales": {
+		"en-US": {
+			"name": "inshasawt",
+			"subtitle": "",
+			"description": ""
+		}
+	},
+	"default_locale": "en-US",
+	"icons": {
+		"56": "/0.png",
+		"112": "/1.png"
+	},
+	"origin": "app://inshasawt.xorasan",
+	"chrome": {
+		"statusbar": "overlap"
+	}
+}

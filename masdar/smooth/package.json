@@ -1,0 +1,25 @@
+{
+  "name": "smooth-array-js",
+  "version": "0.1.7",
+  "description": "Smooth Array for Javascript - a republish of the Smooth.js library written by \"osuushi\" Ada Cohen and Spencer Cohen, all rights are theirs.",
+   "main": "lib/index.js",
+   "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cleverativity/smooth-array-js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cleverativity/smooth-array-js/issues"
+  },
+  "homepage": "https://github.com/cleverativity/smooth-array-js#readme",
+  "devDependencies": {
+    "typescript": "^4.4.4"
+  }
+}

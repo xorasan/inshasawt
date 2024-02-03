@@ -1,0 +1,2 @@
+defaultvoice	Default Voice
+defaultvocoder	Default Vocoder

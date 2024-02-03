@@ -1,0 +1,330 @@
+//+
+/*
+ * 
+ * */
+var inshasawt, cnvs;
+;(function(){
+	'use strict';
+	
+	var mowjoodah = 0, la3ib, timeout, audio = new AudioContext(),
+	mfateeh, mw = 640, mh = 640, volume = 100, seconds = 0.01, arrfin = [],
+	wavelength = mw / 2, totalparts = 8,
+	mhh = mh/2, mhqrtr = mh*.25, mhquad = mh*.75,
+	maintone = 400, wavePoints = new Array(wavelength).fill(0), damage = 1,
+	step = .1, increment = wavelength / 20, parts = [], curpart = 0,
+	pow = Math.pow, abs = Math.abs, sin = Math.sin, PI = Math.PI,
+	round = Math.round, floor = Math.floor, ceil = Math.ceil, generated = [],
+	limit = function (cur, min, max) {
+		if (cur > max) cur = max;
+		if (cur < min) cur = min;
+		return parsefloat(cur, 3);
+	},
+	open = function () {
+		fetch('my.sawt').then(function (e) {
+			e.text().then(function (v) {
+				inshasawt.adaafmatn(v);
+				webapp.itlaa3('opened');
+			});
+		});
+	},
+	save = function () {
+		var str = '';
+		
+		str = JSON.stringify(parts);
+
+		if (str.length)
+			Files.set.file('manaashir/my.sawt', str.trim());
+			
+		webapp.itlaa3('saved');
+	},
+	pausebtn = function (sinf) {
+		softkeys.set(K.en, function () {
+			if (la3ib) inshasawt.inqata3();
+			else inshasawt.il3ab();
+		}, 0, sinf ? 'XPO.iconplayarrow' : 'XPO.iconpause');
+	},
+	stopbtn = function () {
+		softkeys.set(K.sl, function () {
+			inshasawt.intahaa();
+		}, 0, 'XPO.iconstop');
+	},
+	haalah = function () {
+		innertext(
+			mfateeh.haalah,
+			'vol '+volume
+			+', secs '+seconds
+			+', tone '+maintone
+			+', part '+curpart
+		);
+	},
+	resize = function () {
+		if (mfateeh) {
+//			var iw = innerwidth();
+			attribute(mfateeh.canvas, 'width', mw+'px');
+			attribute(mfateeh.canvas, 'height', mh+'px');
+			inshasawt.jaddad();
+		}
+	},
+	applysined = function (i) {
+		return ( ( pow( 1-abs(sin( i / (increment/PI) )), .2) ) * step );
+	},
+	sinewaveat = function (sampleNumber, tone) {
+		var sampleFreq = audio.sampleRate / tone;
+		return Math.sin(sampleNumber / (sampleFreq / (Math.PI * 2)));
+	};
+	
+	inshasawt = {
+		smooth: function (ext) {
+			ext = ext || 4;
+			var arr = [], wps = parts[curpart];
+			for (var i = 0; i < wps.length; i += (increment/ext)) {
+				arr.push(wps[i]+1);
+			}
+// 			$.log(arr.slice(0, 30));
+			var s = Smooth(arr, {method: Smooth.METHOD_CUBIC}), fac = arr.length/wps.length;
+			for (var i = 0; i < wps.length; i += 1) {
+// 				$.log(i, i/wps.length*arr.length, arr.length);
+ 				wps[i] = limit(
+					s(
+						(i/wps.length*arr.length) - fac
+					)-1,
+					-1, 1
+				);
+			}
+// 			$.log(wps.slice(0, 30));
+			inshasawt.jaddad();
+		},
+		naqaf: function () {
+			if (damage) {
+//				$.log('naqaf');
+
+				damage = 0;
+				
+				cnvs.clear(0, 0, mw, mh);
+
+				for (var i = 0; i <= 10; i++)
+    				cnvs.line([{x:0, y:mhh*.1*i}, {x:mw, y:mhh*.1*i}], '#333', -1);
+
+				cnvs.line([{x:0, y:mhqrtr}, {x:mw, y:mhqrtr}], 'white', -1);
+				cnvs.line([{x:0, y:mhquad}, {x:mw, y:mhquad}], 'gray', -1);
+
+				var points = [], vol = volume/100, xpct = mw / wavelength;
+
+				cnvs.circle(mowjoodah*xpct, mhqrtr, 10, 0, 360, 'white', -1);
+				
+				for (var i = 0; i <= wavePoints.length; i += 1) {
+					points.push({x:i*xpct, y:mhqrtr+(wavePoints[i]*mhqrtr)});
+//					cnvs.line([{x:x, y:mhh}, {x:x, y:y}], 'gray', -1);
+				}
+
+				cnvs.line(points, 'white', -1);
+				cnvs.line(generated, 'gray', -1);
+			}
+			
+			setTimeout(inshasawt.naqaf, 100);
+		},
+		jaddad: function () {
+			damage = 1;
+			parts[curpart] = ( parts[curpart] || new Array(wavelength).fill(0) );
+			wavePoints = parts[curpart];
+			inshasawt.ista3ad();
+		},
+		ijma3: function (prt) {
+			var wps = parts[prt] || [];
+			if (wps.length) {
+				var val, ind, vol = volume/100, offset = arrfin.length,
+					total = audio.sampleRate * seconds, pct = wps.length / total;
+				
+				for (var i = offset || 0; i <= offset+total; i += 1) {
+					ind = wps[i % wavelength];
+//					val = sinewaveat( i, maintone * ind );
+					val = ind;
+					arrfin[i] = val * vol;
+				}
+			}
+			return wps;
+		},
+		ista3ad: function () { // prep
+			arrfin = [];
+			generated = [];
+			
+			for (var i in parts) {
+				inshasawt.ijma3(i);
+			}
+			
+			var arr2 = sawthafr.filterData(wavelength, arrfin),
+				y = 0, xpct = mw / wavelength;
+			
+//			arr2 = sawthafr.normalizeData(arr2);
+			
+			for (var x in arr2) {
+				y = arr2[x];
+				generated.push(
+					{ x:x*xpct, y:mhh+mhqrtr+mhqrtr*y },
+				);
+			}
+
+//			$.log(wavePoints);
+
+			damage = 1;
+		},
+		adaafmatn: function (v) {
+			try {
+				parts = JSON.parse(v) || [];
+				curpart = 0;
+				inshasawt.jaddad();
+				haalah();
+			} catch (e) {}
+		},
+		inqata3: function () {
+		},
+		intahaa: function () {
+		},
+		il3ab: function () {
+//			inshasawt.ista3ad();
+			if (!arrfin.length) return;
+			var arr = arrfin;
+			var buf = new Float32Array(arr.length)
+			for (var i = 0; i < arr.length; i++) buf[i] = arr[i]
+			var buffer = audio.createBuffer(1, buf.length, audio.sampleRate)
+			buffer.copyToChannel(buf, 0)
+			var source = audio.createBufferSource();
+			source.buffer = buffer;
+			source.connect(audio.destination);
+			source.start(0);
+		},
+	};
+
+	listener('resize', function () {
+		$.taxeer('XPO.resizeinshasawt', function () { resize(); }, 100);
+	});
+	Hooks.set('XPO.ready', function () {
+		webapp.statusbarpadding();
+		mfateeh = view.mfateeh('XPO.main');
+
+		cnvs = canvas(mfateeh.canvas);
+		resize();
+		open();
+		haalah();
+		
+		for (var i = 0; i <= totalparts; ++i) {
+			parts[i] = new Array(wavelength).fill(0);
+		}
+		
+		inshasawt.jaddad();
+		inshasawt.naqaf();
+	});
+	Hooks.set('XPO.viewready', function (args) {
+		switch (args.XPO.name) {
+			case 'XPO.main':
+				webapp.header();
+				var half = increment/2;
+				softkeys.set('r', function (k, e) {
+					if (e.shiftKey) {
+						for (var i in wavePoints) wavePoints[i] = 0;
+					} else
+					for (var i = -half; i <= half; ++i) {
+						if (mowjoodah+i >= 0 && mowjoodah+i <= mw)
+						wavePoints[mowjoodah+i] = 0;
+					}
+					inshasawt.jaddad();
+				});
+				softkeys.set(K.up, function (k) {
+//					for (var i = -half; i <= half; ++i) {
+						if (mowjoodah >= 0 && mowjoodah < wavelength)
+//						if (mowjoodah+i >= 0 && mowjoodah+i < mw)
+//						wavePoints[mowjoodah+i] = limit(
+						wavePoints[mowjoodah] = limit(
+//							wavePoints[mowjoodah+i] - applysined(i), -1, 1
+//							wavePoints[mowjoodah+i] - step, -1, 1
+							wavePoints[mowjoodah] - step, -1, 1
+						);
+//					}
+					inshasawt.jaddad();
+				});
+				softkeys.set(K.dn, function (k) {
+//					for (var i = -half; i <= half; ++i) {
+						if (mowjoodah >= 0 && mowjoodah < wavelength)
+//						if (mowjoodah+i >= 0 && mowjoodah+i < mw)
+//						wavePoints[mowjoodah+i] = limit(
+						wavePoints[mowjoodah] = limit(
+//							wavePoints[mowjoodah+i] + applysined(i), -1, 1
+//							wavePoints[mowjoodah+i] + step, -1, 1
+							wavePoints[mowjoodah] + step, -1, 1
+						);
+//					}
+					inshasawt.jaddad();
+				});
+				softkeys.set(K.lf, function (k) {
+					mowjoodah = limit(mowjoodah-half, 0, wavelength);
+					inshasawt.jaddad();
+				});
+				softkeys.set(K.rt, function (k) {
+					mowjoodah = limit(mowjoodah+half, 0, wavelength);
+					inshasawt.jaddad();
+				});
+				softkeys.set('x', function () {
+					maintone+=50;
+					inshasawt.ista3ad();
+					haalah();
+				});
+				softkeys.set('z', function () {
+					maintone-=50;
+					if (maintone < 0) maintone = 50;
+					inshasawt.ista3ad();
+					haalah();
+				});
+				softkeys.set('q', function () {
+					curpart = limit(curpart-1, 0, totalparts);
+					inshasawt.jaddad();
+					haalah();
+				});
+				softkeys.set('e', function () {
+					curpart = limit(curpart+1, 0, totalparts);
+					inshasawt.jaddad();
+					haalah();
+				});
+				softkeys.set('w', function () {
+				});
+				softkeys.set('s', function (k, e) {
+					if (e.ctrlKey) save();
+					else
+					inshasawt.smooth(e.shiftKey ? 2 : 0);
+				});
+				softkeys.set('o', function (k, e) {
+					if (e.ctrlKey) open();
+				});
+				softkeys.set('i', function () {
+					volume = limit(volume+10, 0, 100);
+					inshasawt.ista3ad();
+					haalah();
+				});
+				softkeys.set('k', function () {
+					volume = limit(volume-10, 0, 100);
+					inshasawt.ista3ad();
+					haalah();
+				});
+				softkeys.set('d', function () {
+					seconds = limit(seconds+.01, .01, .4);
+					inshasawt.ista3ad();
+					haalah();
+				});
+				softkeys.set('a', function () {
+					seconds = limit(seconds-.01, .01, .4);
+					inshasawt.ista3ad();
+					haalah();
+				});
+				softkeys.set('4', function () {
+				}, '4 copy', 'XPO.iconcopy');
+				softkeys.set('3', function () {
+
+				}, '3 inst', 'XPO.icondone');
+				softkeys.set('2', function () {
+					inshasawt.jaddad();
+				}, '2', 'XPO.iconsearch');
+				pausebtn(1);
+				stopbtn();
+				break;
+		}
+	});
+})();
